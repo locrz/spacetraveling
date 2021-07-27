@@ -1,1 +1,21 @@
 // TODO
+.contentContainer {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: calc(100vh - 5rem);
+
+  button {
+    background-color: transparent;
+    border: 0;
+    color: var(--pink);
+    font-weight: bolder;
+    font-size: 1.25rem;
+    margin-top: 5rem;
+    transition: filter 0.2s;
+
+    &:hover {
+      filter: brightness(1.2);
+    }
+  }
+}

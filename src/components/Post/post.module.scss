@@ -1,0 +1,41 @@
+.post {
+  margin-top: 2.5rem;
+
+  h1 {
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: bold;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+  }
+
+  > span {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: normal;
+  }
+
+  .postFooter {
+    display: flex;
+    margin-top: 1.5rem;
+
+    color: var(--info);
+
+    .time {
+      display: flex;
+      align-items: center;
+    }
+
+    .author {
+      margin-left: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  transition: color 0.2s;
+
+  &:hover h1 {
+    color: var(--pink);
+  }
+}
