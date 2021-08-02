@@ -1,9 +1,11 @@
 import { GetStaticProps } from 'next';
 import Prismic from '@prismicio/client';
+import { useState } from 'react';
 import { getPrismicClient } from '../services/prismic';
-import { Post } from '../components/Post';
 
+import { Post as PostComponent } from '../components/Post';
 import styles from './home.module.scss';
+import { formatDate } from '../utils.formatDate';
 
 interface Post {
   uid?: string;
@@ -16,7 +18,7 @@ interface Post {
 }
 
 interface PostPagination {
-  next_page: string;
+  next_page: string | null;
   results: Post[];
 }
 
@@ -25,24 +27,33 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  const [nextPage, setNextPage] = useState<string | null>(
+    postsPagination.next_page
+  );
+  const [posts, setPosts] = useState<Post[]>(postsPagination.results);
+
   async function fetchNextPage(): Promise<void> {
-    await fetch(postsPagination.next_page);
+    const { next_page, results } = await (await fetch(nextPage)).json();
+    setNextPage(next_page);
+    setPosts(prev => [...prev, ...results]);
   }
 
   return (
     <>
       <main className={styles.contentContainer}>
-        {postsPagination?.results?.map(post => (
-          <Post
+        {posts.map(post => (
+          <PostComponent
             uid={post.uid}
             key={post.uid}
-            time={post.first_publication_date}
             data={post.data}
+            time={formatDate(post.first_publication_date)}
           />
         ))}
-        <button type="button" onClick={fetchNextPage}>
-          Carregar mais posts
-        </button>
+        {!!nextPage && (
+          <button type="button" onClick={fetchNextPage}>
+            Carregar mais posts
+          </button>
+        )}
       </main>
     </>
   );
@@ -54,26 +65,22 @@ export const getStaticProps: GetStaticProps = async () => {
     [Prismic.Predicates.at('document.type', 'post')],
     {
       fetch: ['post.title', 'post.subtitle', 'post.author'],
-      pageSize: 50,
+      pageSize: 1,
     }
-  );
-
-  console.log(
-    'postsResponse',
-    postsResponse.results.map(post => post)
   );
 
   const postsPagination: PostPagination = {
     next_page: postsResponse.next_page,
     results: postsResponse?.results?.map(post => ({
       uid: post.uid,
-      first_publication_date: new Date(
-        post.first_publication_date
-      ).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }),
+      first_publication_date: post.first_publication_date,
+      // first_publication_date: new Date(
+      //   post.first_publication_date
+      // ).toLocaleDateString('pt-BR', {
+      //   day: '2-digit',
+      //   month: 'long',
+      //   year: 'numeric',
+      // }),
       data: {
         title: post.data.title,
         author: post.data.author,
