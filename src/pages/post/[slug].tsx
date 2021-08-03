@@ -10,6 +10,7 @@ import { getPrismicClient } from '../../services/prismic';
 
 import { formatDate } from '../../utils.formatDate';
 import styles from './post.module.scss';
+import Comments from '../../components/Comments';
 
 interface Post {
   first_publication_date: string | null;
@@ -34,7 +35,7 @@ interface PostProps {
 
 const WORDS_READ_PER_MINUTE = 200;
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post }: PostProps): JSX.Element {
   const router = useRouter();
 
   const getTimeToRead = useCallback(() => {
@@ -82,6 +83,8 @@ export default function Post({ post }: PostProps) {
               __html: RichText.asHtml(post.data.content),
             }}
           />
+
+          <Comments />
         </article>
       </main>
     </>
